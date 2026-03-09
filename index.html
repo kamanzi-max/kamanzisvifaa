@@ -218,7 +218,9 @@
       .fgrid { grid-template-columns:1fr; }
 
       /* show search bar on mobile */
-      .nav-search { display:flex; max-width:140px; }
+      .nav-search { display:none; position:absolute; top:64px; left:0; right:0; background:#1a1a1a; border-radius:0; max-width:100%; padding:0.6rem 1rem; z-index:99; }
+.nav-search input { width:100%; font-size:0.9rem; }
+#search-toggle { display:block !important; }
       .nav-search input { width:100%; font-size:0.78rem; }
 
       /* 2 products per row on mobile */
@@ -243,9 +245,12 @@
     <li><a href="#products">Shop</a></li>
     <li><a href="#contact">Contact</a></li>
   </ul>
-  <div class="nav-search">
+  <div class="nav-search" id="nav-search-bar">
     <span>🔍</span>
-    <input type="text" placeholder="Search components..." oninput="searchProducts(this.value)"/>
+    <input type="text" id="search-input" placeholder="Search..." oninput="searchProducts(this.value)"/>
+  </div>
+  <!-- mobile search toggle -->
+  <button id="search-toggle" onclick="toggleSearch()" style="display:none;background:none;border:none;color:#fff;font-size:1.4rem;cursor:pointer;">🔍</button>
   </div>
   <div class="nav-actions">
     <button class="btn-theme" id="theme-btn" onclick="toggleTheme()">🌙 Dark</button>
@@ -329,7 +334,7 @@
   </div>
   <div class="footer-bottom">
     <span>© 2026 Kamanzi's Vifaa. All rights reserved.</span>
-    <span>Made with ❤️ in Tanzania</span>
+    <span>Made in Tanzania</span>
   </div>
 </footer>
 
@@ -809,7 +814,10 @@ function showToast(msg) {
 ───────────────────────────────────────── */
 loadProducts();
 document.querySelector('.btn-cart').addEventListener('click', openCart);
-
+function toggleSearch() {
+  const bar = document.getElementById('nav-search-bar');
+  bar.style.display = bar.style.display === 'flex' ? 'none' : 'flex';
+}
 </script>
 </body>
 </html>
