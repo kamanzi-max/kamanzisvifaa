@@ -332,8 +332,9 @@
       <ul><li><a href="#">FAQ</a></li><li><a href="#">Shipping</a></li><li><a href="#">Returns</a></li><li><a href="#">Track Order</a></li></ul>
     </div>
   </div>
-  <div class="footer-bottom">
-    <span>© 2026 Kamanzi's Vifaa. All rights reserved.</span>
+  <div class="footer-bottom" style="position:relative;">
+  <div id="admin-trigger" onclick="adminTap()" style="position:absolute;top:0;right:0;width:40px;height:40px;cursor:default;-webkit-user-select:none;user-select:none;"></div>
+    <span id="admin-trigger" onclick="adminTap()">© 2026 Kamanzi's Vifaa. All rights reserved.</span>
     <span>Made in Tanzania</span>
   </div>
 </footer>
@@ -817,6 +818,14 @@ document.querySelector('.btn-cart').addEventListener('click', openCart);
 function toggleSearch() {
   const bar = document.getElementById('nav-search-bar');
   bar.style.display = bar.style.display === 'flex' ? 'none' : 'flex';
+}
+let tapCount = 0;
+function adminTap() {
+  tapCount++;
+  if (tapCount >= 5) {
+    tapCount = 0;
+    openAdmin();
+  }
 }
 </script>
 </body>
