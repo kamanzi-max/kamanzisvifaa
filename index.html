@@ -214,9 +214,20 @@
       .hero-visual { grid-template-columns:1fr 1fr; }
       .footer-grid { grid-template-columns:1fr 1fr; }
       nav ul { display:none; }
-      .nav-search { display:none; }
       .adm-layout { grid-template-columns:1fr; }
       .fgrid { grid-template-columns:1fr; }
+
+      /* show search bar on mobile */
+      .nav-search { display:flex; max-width:140px; }
+      .nav-search input { width:100%; font-size:0.78rem; }
+
+      /* 2 products per row on mobile */
+      .products-grid { grid-template-columns:1fr 1fr; gap:0.8rem; }
+      .product-img { height:140px; }
+      .product-body { padding:0.7rem 0.8rem 0.9rem; }
+      .product-body h3 { font-size:0.82rem; }
+      .price { font-size:0.9rem; }
+      .btn-add { width:28px; height:28px; font-size:1rem; }
     }
   </style>
 </head>
