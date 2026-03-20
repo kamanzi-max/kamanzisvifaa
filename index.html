@@ -223,13 +223,31 @@
 #search-toggle { display:block !important; }
       .nav-search input { width:100%; font-size:0.78rem; }
 
-      /* 2 products per row on mobile */
+    /* 2 products per row on mobile */
       .products-grid { grid-template-columns:1fr 1fr; gap:0.8rem; }
       .product-img { height:140px; }
       .product-body { padding:0.7rem 0.8rem 0.9rem; }
       .product-body h3 { font-size:0.82rem; }
       .price { font-size:0.9rem; }
       .btn-add { width:28px; height:28px; font-size:1rem; }
+
+      /* Admin panel mobile fixes */
+      #admin-panel { height:100vh; overflow-y:auto; }
+      .login-box { max-width:90%; padding:2rem 1.5rem; }
+      .adm-layout { grid-template-columns:1fr; height:auto; }
+      .adm-sidebar { padding:1rem; }
+      .adm-nav { padding:0.6rem 0.8rem; font-size:0.85rem; }
+      .adm-main { padding:1.5rem; }
+      .stats-row { grid-template-columns:1fr 1fr; }
+      .adm-card { padding:1.2rem; }
+      .fgrid { grid-template-columns:1fr; gap:0.8rem; }
+      .fg input, .fg select, .fg textarea { padding:0.6rem 0.8rem; font-size:0.88rem; }
+      .btn-save { padding:0.75rem 1.5rem; font-size:0.88rem; }
+      .atbl th, .atbl td { padding:0.6rem 0.7rem; font-size:0.82rem; }
+      .post-item { padding:0.9rem; }
+
+      /* User login modal mobile */
+      #user-login-modal .login-box { max-width:95%; padding:1.5rem 1rem; }
     }
   </style>
 </head>
@@ -254,6 +272,7 @@
   </div>
   <div class="nav-actions">
     <button class="btn-theme" id="theme-btn" onclick="toggleTheme()">🌙 Dark</button>
+    <button class="btn-theme" id="login-btn" onclick="openLogin()">Login</button>
     <button class="btn-cart">🛒 Cart (0)</button>
   </div>
 </nav>
@@ -333,9 +352,8 @@
     </div>
   </div>
   <div class="footer-bottom" style="position:relative;">
-  <span>© 2026 Kamanzi's Vifaa. All rights reserved.</span>
+  <span>© 2026 Kamaqnzi's Vifaa. All rights reserved.</span>
   <span>Made  in Tanzania</span>
-  <div onclick="adminTap()" style="position:fixed;bottom:0;right:0;width:60px;height:60px;z-index:99;cursor:default;"></div>
 </div>
 </footer>
 
@@ -479,6 +497,19 @@
 
 <div id="toast"></div>
 
+<!-- USER LOGIN MODAL -->
+<div id="user-login-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:1000;display:flex;align-items:center;justify-content:center;">
+  <div class="login-box" style="background:#fff;color:#0f0e0c;max-width:380px;width:100%;margin:1rem;">
+    <h1>Login</h1>
+    <p>Login to access services</p>
+    <input type="text" id="u-user" placeholder="Username"/>
+    <input type="password" id="u-pass" placeholder="Password" onkeydown="if(event.key==='Enter')doUserLogin()"/>
+    <button class="btn-login" onclick="doUserLogin()">Login →</button>
+    <div class="login-error" id="user-login-err" style="display:none;">Invalid credentials</div>
+    <button onclick="closeLogin()" style="background:none;border:none;color:#888;font-size:0.8rem;margin-top:0.5rem;cursor:pointer;">Cancel</button>
+  </div>
+</div>
+
 <!-- ══════════════ SCRIPTS ══════════════ -->
 <script>
 
@@ -522,6 +553,35 @@ function doLogin() {
     loadOverview();
   } else {
     document.getElementById('login-err').style.display = 'block';
+  }
+}
+
+/* ─────────────────────────────────────────
+   USER LOGIN
+───────────────────────────────────────── */
+function openLogin() {
+  document.getElementById('user-login-modal').style.display = 'flex';
+}
+
+function closeLogin() {
+  document.getElementById('user-login-modal').style.display = 'none';
+  document.getElementById('u-user').value = '';
+  document.getElementById('u-pass').value = '';
+  document.getElementById('user-login-err').style.display = 'none';
+}
+
+function doUserLogin() {
+  const u = document.getElementById('u-user').value.trim();
+  const p = document.getElementById('u-pass').value.trim();
+  if (u === ADMIN_USER && p === ADMIN_PASS) {
+    closeLogin();
+    openAdmin();
+  } else if (u && p) {
+    // For normal users, just log in (dummy for now)
+    closeLogin();
+    showToast('✓ Welcome, ' + u + '! Services available.');
+  } else {
+    document.getElementById('user-login-err').style.display = 'block';
   }
 }
 
@@ -818,14 +878,6 @@ document.querySelector('.btn-cart').addEventListener('click', openCart);
 function toggleSearch() {
   const bar = document.getElementById('nav-search-bar');
   bar.style.display = bar.style.display === 'flex' ? 'none' : 'flex';
-}
-let tapCount = 0;
-function adminTap() {
-  tapCount++;
-  if (tapCount >= 5) {
-    tapCount = 0;
-    openAdmin();
-  }
 }
 </script>
 </body>
