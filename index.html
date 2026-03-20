@@ -29,7 +29,7 @@
     body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text); overflow-x:hidden; transition:background 0.3s,color 0.3s; }
 
     /* ══ NAV ══ */
-    nav { position:sticky; top:0; z-index:100; background:#0f0e0c; display:flex; align-items:center; justify-content:space-between; padding:0 4%; height:64px; gap:1rem; }
+    nav { position:sticky; top:0; z-index:100; background:#0f0e0c; display:flex; align-items:center; justify-content:space-between; padding:0 4%; height:64px; gap:1rem; flex-wrap:wrap; }
     .logo { font-family:'Playfair Display',sans-serif; font-weight:800; font-size:1.35rem; color:#fff; white-space:nowrap; }
     .logo span { color:var(--accent); }
     nav ul { display:flex; gap:1.8rem; list-style:none; }
@@ -249,6 +249,39 @@
       /* User login modal mobile */
       #user-login-modal .login-box { max-width:95%; padding:1.5rem 1rem; }
     }
+    /* ══ CHAT ══ */
+.chat-locked { display:flex; align-items:center; gap:0.7rem; color:var(--muted); font-size:0.88rem; background:var(--border); padding:0.75rem 1.4rem; border-radius:50px; }
+.btn-open-chat { display:none; align-items:center; gap:0.8rem; background:var(--accent); color:#fff; border:none; padding:0.9rem 1.8rem; border-radius:50px; font-family:'Playfair Display',sans-serif; font-weight:700; font-size:0.95rem; cursor:pointer; }
+.btn-open-chat:hover { opacity:0.88; }
+#chat-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:300; }
+#chat-window { display:none; flex-direction:column; position:fixed; bottom:0; right:0; width:min(400px,100vw); height:min(540px,100vh); background:#fff; z-index:301; border-radius:20px 20px 0 0; box-shadow:0 -4px 40px rgba(0,0,0,0.2); }
+.chat-head { background:#0f0e0c; color:#fff; padding:1rem 1.2rem; display:flex; align-items:center; justify-content:space-between; border-radius:20px 20px 0 0; }
+.chat-head-info { display:flex; align-items:center; gap:0.8rem; }
+.chat-avatar { width:36px; height:36px; background:var(--accent); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.1rem; }
+.chat-head h3 { font-family:'Playfair Display',sans-serif; font-size:0.98rem; font-weight:700; }
+.chat-head p { font-size:0.72rem; color:#aaa; }
+.btn-close-chat { background:none; border:none; color:#aaa; font-size:1.4rem; cursor:pointer; }
+.chat-msgs { flex:1; overflow-y:auto; padding:1rem; display:flex; flex-direction:column; gap:0.7rem; background:#f8f8f8; }
+.cmsg { max-width:80%; padding:0.55rem 0.85rem; border-radius:14px; font-size:0.88rem; line-height:1.5; word-break:break-word; }
+.cmsg.user { background:var(--accent); color:#fff; align-self:flex-end; border-bottom-right-radius:4px; }
+.cmsg.admin { background:#fff; color:#0f0e0c; align-self:flex-start; border-bottom-left-radius:4px; box-shadow:0 1px 4px rgba(0,0,0,0.08); }
+.chat-input-row { display:flex; gap:0.5rem; padding:0.8rem; background:#fff; border-top:1px solid #eee; }
+.chat-input-row input { flex:1; background:#f5f5f5; border:1.5px solid #eee; padding:0.6rem 1rem; border-radius:50px; outline:none; font-family:'DM Sans',sans-serif; font-size:0.88rem; }
+.chat-input-row input:focus { border-color:var(--accent); }
+.btn-send { background:var(--accent); color:#fff; border:none; width:36px; height:36px; border-radius:50%; font-size:1.1rem; cursor:pointer; flex-shrink:0; }
+/* admin inbox */
+.conv-item { background:#141414; border-radius:12px; padding:0.9rem 1.1rem; border:1px solid #1e1e1e; margin-bottom:0.6rem; display:flex; align-items:center; justify-content:space-between; cursor:pointer; }
+.conv-item:hover { background:#1e1e1e; }
+.conv-name { font-family:'Playfair Display',sans-serif; font-weight:700; color:#fff; font-size:0.92rem; }
+.conv-preview { color:#555; font-size:0.78rem; margin-top:0.1rem; }
+.conv-badge { background:var(--accent); color:#fff; font-size:0.68rem; font-weight:700; padding:0.15rem 0.5rem; border-radius:50px; }
+.adm-chat-msgs { background:#0d0d0d; border-radius:12px; padding:1rem; height:280px; overflow-y:auto; display:flex; flex-direction:column; gap:0.5rem; margin-bottom:1rem; }
+.adm-cmsg { max-width:80%; padding:0.5rem 0.8rem; border-radius:12px; font-size:0.85rem; }
+.adm-cmsg.user { background:#1e3a4a; color:#9dd4f5; align-self:flex-start; }
+.adm-cmsg.admin { background:var(--accent); color:#fff; align-self:flex-end; }
+.adm-reply-row { display:flex; gap:0.5rem; }
+.adm-reply-row input { flex:1; background:#111; border:1.5px solid #2a2a2a; color:#fff; padding:0.65rem 1rem; border-radius:50px; outline:none; font-family:'DM Sans',sans-serif; font-size:0.86rem; }
+.adm-reply-row input:focus { border-color:var(--accent); }
   </style>
 </head>
 <body>
@@ -259,8 +292,6 @@
   <span class="logo">Kamanzi's<span>Vifaa</span></span>
   <ul>
     <li><a href="#">Home</a></li>
-    <li><a href="#categories">Categories</a></li>
-    <li><a href="#products">Shop</a></li>
     <li><a href="#contact">Contact</a></li>
   </ul>
   <div class="nav-search" id="nav-search-bar">
@@ -299,39 +330,60 @@
       <div class="section-label">Featured</div>
       <div class="section-title">Popular Products</div>
     </div>
-    <a href="#" class="btn-outline" style="font-family:'Playfair Display',sans-serif;font-weight:700;font-size:0.88rem;padding:0.55rem 1.4rem;">View All →</a>
+    <a href="#products" class="btn-outline" style="font-family:'Playfair Display',sans-serif;font-weight:700;font-size:0.88rem;padding:0.55rem 1.4rem;">View All →</a>
   </div>
   <div class="products-grid" id="products-grid">
     <div class="product-card">
       <div class="product-img c1" style="padding:10px;position:relative;">
-        <div class="badge">NEW</div><img src="arduino.jpeg" style="width:100%;height:100%;object-fit:contain;"/></div>
+        <img src="arduino.jpeg" style="width:100%;height:100%;object-fit:contain;"/></div>
       <div class="product-body"><div class="category">Arduino & Microcontrollers</div><h3>Arduino Uno R3</h3><div class="product-footer"><span class="price">TZS 18,000</span><button class="btn-add">+</button></div></div>
     </div>
     <div class="product-card">
       <div class="product-img c2" style="padding:10px;position:relative;">
-        <div class="badge">NEW</div><img src="ultra.jpeg" style="width:100%;height:100%;object-fit:contain;"/></div>
+        <img src="ultra.jpeg" style="width:100%;height:100%;object-fit:contain;"/></div>
       <div class="product-body"><div class="category">Sensors</div><h3>Ultrasonic Sensor</h3><div class="product-footer"><span class="price">TZS 8,000</span><button class="btn-add">+</button></div></div>
     </div>
     <div class="product-card">
       <div class="product-img c3" style="padding:10px;position:relative;">
-        <div class="badge">NEW</div><img src="transfomer.jpeg" style="width:100%;height:100%;object-fit:contain;"/></div>
+        <img src="transfomer.jpeg" style="width:100%;height:100%;object-fit:contain;"/></div>
       <div class="product-body"><div class="category">Power Components</div><h3>Transformer</h3><div class="product-footer"><span class="price">TZS 15,000</span><button class="btn-add">+</button></div></div>
     </div>
     <div class="product-card">
       <div class="product-img c4" style="padding:10px;position:relative;">
-        <div class="badge">SALE</div><img src="7 in 1.jpeg" style="width:100%;height:100%;object-fit:contain;"/></div>
+        <img src="7 in 1.jpeg" style="width:100%;height:100%;object-fit:contain;"/></div>
       <div class="product-body"><div class="category">Electronics</div><h3>USB-C Hub 7-in-1</h3><div class="product-footer"><span class="price">TZS 23,000</span><button class="btn-add">+</button></div></div>
     </div>
   </div>
 </section>
 
-<!-- PROMO BANNER -->
-<div class="banner">
-  <h2>Get <span>10% off</span> your first order when you sign up today</h2>
-  <a href="#contact" class="btn-primary" style="white-space:nowrap;color:#fff;">Contact Us →</a>
-</div>
-
 <!-- FOOTER -->
+ <!-- CONTACT / CHAT -->
+<section class="section contact-section" id="contact" style="background:var(--card);">
+  <div class="section-label">Get in Touch</div>
+  <div class="section-title">Contact Us</div>
+  <p style="color:var(--muted);margin-bottom:1.5rem;max-width:480px;">Have a question about a product or want to place an order? Chat with us directly!</p>
+  <button class="btn-open-chat" id="btn-open-chat" onclick="openChat()">💬 Chat with Us</button>
+  <div class="chat-locked" id="chat-locked">🔒 Login first to chat with us</div>
+</section>
+
+<!-- CHAT WINDOW -->
+<div id="chat-overlay" onclick="closeChat()"></div>
+<div id="chat-window">
+  <div class="chat-head">
+    <div class="chat-head-info">
+      <div class="chat-avatar">🔌</div>
+      <div><h3>Kamanzi's Vifaa</h3><p>We reply within a few hours</p></div>
+    </div>
+    <button class="btn-close-chat" onclick="closeChat()">✕</button>
+  </div>
+  <div class="chat-msgs" id="chat-msgs">
+    <p style="color:#bbb;text-align:center;font-size:0.85rem;padding:1.5rem;">Send us a message!</p>
+  </div>
+  <div class="chat-input-row">
+    <input type="text" id="chat-input" placeholder="Type a message..." onkeydown="if(event.key==='Enter')sendMsg()"/>
+    <button class="btn-send" onclick="sendMsg()">➤</button>
+  </div>
+</div>
 <footer>
   <div class="footer-grid">
     <div class="footer-brand">
@@ -344,11 +396,7 @@
     </div>
     <div class="footer-col">
       <h5>Company</h5>
-      <ul><li><a href="#">About Us</a></li><li><a href="#">Blog</a></li><li><a href="#">Careers</a></li><li><a href="#contact">Contact</a></li></ul>
-    </div>
-    <div class="footer-col">
-      <h5>Support</h5>
-      <ul><li><a href="#">FAQ</a></li><li><a href="#">Shipping</a></li><li><a href="#">Returns</a></li><li><a href="#">Track Order</a></li></ul>
+      <ul><li><a href="#" onclick="showSection('about-us')">About Us</a></li><li><a href="#" onclick="showSection('blog')">Blog</a></li><li><a href="#" onclick="showSection('careers')">Careers</a></li><li><a href="#contact" onclick="showSection('contact-info')">Contact</a></li></ul>
     </div>
   </div>
   <div class="footer-bottom" style="position:relative;">
@@ -392,6 +440,7 @@
         <button class="adm-nav" onclick="showAPage('add',this)">➕ Add Product</button>
         <button class="adm-nav" onclick="showAPage('products',this)">📦 Products</button>
         <button class="adm-nav" onclick="showAPage('posts',this)">📢 Announcements</button>
+        <button class="adm-nav" onclick="showAPage('inbox',this)">💬 Messages</button>
       </div>
 
       <!-- MAIN AREA -->
@@ -489,11 +538,67 @@
           </div>
           <div id="posts-list"></div>
         </div>
-
+<!-- MESSAGES INBOX -->
+        <div class="adm-page" id="ap-inbox">
+          <div class="adm-title">Messages</div>
+          <div class="adm-sub">Customer conversations</div>
+          <div id="adm-conv-list"></div>
+          <div id="adm-chat-view" style="display:none;">
+            <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1rem;">
+              <button onclick="backToConvs()" style="background:none;border:1.5px solid #333;color:#aaa;padding:0.35rem 0.9rem;border-radius:50px;cursor:pointer;font-size:0.82rem;">← Back</button>
+              <span id="adm-chat-uname" style="font-family:'Playfair Display',sans-serif;font-weight:700;color:#fff;"></span>
+            </div>
+            <div class="adm-chat-msgs" id="adm-chat-msgs"></div>
+            <div class="adm-reply-row">
+              <input type="text" id="adm-reply" placeholder="Type your reply..." onkeydown="if(event.key==='Enter')sendAdmReply()"/>
+              <button class="btn-save" onclick="sendAdmReply()" style="padding:0.65rem 1.4rem;">Send</button>
+            </div>
+          </div>
+        </div>
       </div><!-- /adm-main -->
     </div><!-- /adm-layout -->
   </div><!-- /admin-dash -->
 </div><!-- /admin-panel -->
+
+<!-- CONTENT SECTIONS -->
+<section id="about-us" class="section" style="display:none;">
+  <div class="section-title">About Us</div>
+  <p>Kamanzi's Vifaa is Tanzania's trusted source for electronic components. We supply Arduino boards, sensors, modules, resistors, capacitors and more to students, engineers, and hobbyists across the country.</p>
+  <p>Founded in Dar es Salaam, our mission is simple — make quality electronics accessible and affordable for every Tanzanian who wants to build, create, and innovate.</p>
+  <p>Whether you are a university student working on a final project, a professional engineer, or someone who just loves electronics — we have what you need, at prices that make sense.</p>
+</section>
+
+<section id="blog" class="section" style="display:none;">
+  <div class="section-title">Blog</div>
+  <p>Welcome to the Kamanzi's Vifaa Blog — your go-to resource for electronics tutorials, project ideas, and tips for builders in Tanzania.</p>
+  <p>Coming soon:</p>
+  <ul>
+    <li>How to get started with Arduino in Tanzania</li>
+    <li>Top 5 electronic components every beginner needs</li>
+    <li>How we source our components and why quality matters</li>
+    <li>Student project showcase</li>
+  </ul>
+  <p>Have a project you built with our components? We would love to feature it. Reach out to us in the chat bot</p>
+</section>
+
+<section id="careers" class="section" style="display:none;">
+  <div class="section-title">Careers</div>
+  <p>We are a growing business and we are always looking for passionate people to join our team.</p>
+  <p>Current opportunities:</p>
+  <ul>
+    <li>Delivery & Logistics (Dar es Salaam)</li>
+    <li>Social Media & Marketing</li>
+    <li>Electronics Technical Support</li>
+  </ul>
+  <p>We value passion over experience. If you love electronics, technology, or business and want to grow with us, send your name, phone number, and a short message about yourself in the chat bot</p>
+  <p>We will get back to you within 3 business days.</p>
+</section>
+
+<section id="contact-info" class="section" style="display:none;">
+  <div class="section-title">Contact</div>
+  <p>We are always happy to hear from you. Whether you have a question about a product, want to place a bulk order, or just need advice on which component to buy — reach out!</p>
+  <p>Reach out to us in the chat bot</p>
+</section>
 
 <div id="toast"></div>
 
@@ -585,6 +690,12 @@ function doUserLogin() {
   }
 }
 
+function showSection(id) {
+  document.querySelectorAll('.section[id]').forEach(s => s.style.display = 'none');
+  document.getElementById(id).style.display = 'block';
+  document.getElementById(id).scrollIntoView({behavior: 'smooth'});
+}
+
 /* ─────────────────────────────────────────
    ADMIN NAVIGATION
 ───────────────────────────────────────── */
@@ -596,6 +707,7 @@ function showAPage(id, btn) {
   if (id==='overview') loadOverview();
   if (id==='products') loadAllProducts();
   if (id==='posts')    loadPosts();
+  if (id==='inbox')  { document.getElementById('adm-conv-list').style.display='block'; document.getElementById('adm-chat-view').style.display='none'; loadConvs(); }
 }
 
 /* ─────────────────────────────────────────
@@ -875,6 +987,119 @@ function showToast(msg) {
 ───────────────────────────────────────── */
 loadProducts();
 document.querySelector('.btn-cart').addEventListener('click', openCart);
+/* ── CHAT STATE ── */
+let currentUser = null;
+let chatPoll = null;
+let admChatUser = null;
+let admPoll = null;
+
+function updateChatUI() {
+  if (currentUser) {
+    document.getElementById('btn-open-chat').style.display = 'flex';
+    document.getElementById('chat-locked').style.display = 'none';
+    document.getElementById('login-btn').textContent = '👤 ' + currentUser;
+  } else {
+    document.getElementById('btn-open-chat').style.display = 'none';
+    document.getElementById('chat-locked').style.display = 'flex';
+    document.getElementById('login-btn').textContent = 'Login';
+  }
+}
+
+// Override doUserLogin to set currentUser
+const _origDoUserLogin = doUserLogin;
+function doUserLogin() {
+  const u = document.getElementById('u-user').value.trim();
+  const p = document.getElementById('u-pass').value.trim();
+  if (u === ADMIN_USER && p === ADMIN_PASS) { closeLogin(); openAdmin(); return; }
+  if (u && p) { currentUser = u; closeLogin(); updateChatUI(); showToast('✓ Welcome, ' + u + '!'); }
+  else { document.getElementById('user-login-err').style.display = 'block'; }
+}
+
+function openChat() {
+  if (!currentUser) { openLogin(); return; }
+  document.getElementById('chat-overlay').style.display = 'block';
+  const w = document.getElementById('chat-window');
+  w.style.display = 'flex';
+  loadChatMsgs();
+  chatPoll = setInterval(loadChatMsgs, 4000);
+}
+function closeChat() {
+  document.getElementById('chat-overlay').style.display = 'none';
+  document.getElementById('chat-window').style.display = 'none';
+  if (chatPoll) { clearInterval(chatPoll); chatPoll = null; }
+}
+async function loadChatMsgs() {
+  if (!currentUser) return;
+  const msgs = await api('/api/messages/' + currentUser);
+  if (!msgs) return;
+  const box = document.getElementById('chat-msgs');
+  if (!msgs.length) { box.innerHTML = '<p style="color:#bbb;text-align:center;font-size:0.85rem;padding:1.5rem;">Send us a message!</p>'; return; }
+  box.innerHTML = msgs.map(m => `<div class="cmsg ${m.sender}">${m.text}</div>`).join('');
+  box.scrollTop = box.scrollHeight;
+}
+async function sendMsg() {
+  const inp = document.getElementById('chat-input');
+  const txt = inp.value.trim();
+  if (!txt || !currentUser) return;
+  inp.value = '';
+  await api('/api/messages', 'POST', { username: currentUser, sender: 'user', text: txt });
+  loadChatMsgs();
+}
+
+/* ── ADMIN INBOX ── */
+async function loadConvs() {
+  const convs = await api('/api/messages/conversations');
+  if (!convs) return;
+  const list = document.getElementById('adm-conv-list');
+  if (!convs.length) { list.innerHTML = '<p style="color:#444;text-align:center;padding:1.5rem;">No messages yet.</p>'; return; }
+  list.innerHTML = convs.map(c => `
+    <div class="conv-item" onclick="openConv('${c.username}')">
+      <div>
+        <div class="conv-name">👤 ${c.username}</div>
+        <div class="conv-preview">${c.count} message${c.count>1?'s':''}</div>
+      </div>
+      <div style="display:flex;gap:0.5rem;align-items:center;">
+        ${c.unread > 0 ? `<span class="conv-badge">${c.unread} new</span>` : ''}
+        <button class="btn-del" onclick="event.stopPropagation();delConv('${c.username}')">🗑</button>
+      </div>
+    </div>`).join('');
+}
+async function openConv(username) {
+  admChatUser = username;
+  document.getElementById('adm-conv-list').style.display = 'none';
+  document.getElementById('adm-chat-view').style.display = 'block';
+  document.getElementById('adm-chat-uname').textContent = 'Chat with ' + username;
+  loadAdmMsgs();
+  admPoll = setInterval(loadAdmMsgs, 4000);
+}
+function backToConvs() {
+  admChatUser = null;
+  if (admPoll) { clearInterval(admPoll); admPoll = null; }
+  document.getElementById('adm-chat-view').style.display = 'none';
+  document.getElementById('adm-conv-list').style.display = 'block';
+  loadConvs();
+}
+async function loadAdmMsgs() {
+  if (!admChatUser) return;
+  const msgs = await api('/api/messages/' + admChatUser);
+  if (!msgs) return;
+  const box = document.getElementById('adm-chat-msgs');
+  box.innerHTML = msgs.length ? msgs.map(m => `<div class="adm-cmsg ${m.sender}">${m.text}</div>`).join('') : '<p style="color:#444;text-align:center;">No messages.</p>';
+  box.scrollTop = box.scrollHeight;
+}
+async function sendAdmReply() {
+  const inp = document.getElementById('adm-reply');
+  const txt = inp.value.trim();
+  if (!txt || !admChatUser) return;
+  inp.value = '';
+  await api('/api/messages', 'POST', { username: admChatUser, sender: 'admin', text: txt });
+  loadAdmMsgs();
+}
+async function delConv(username) {
+  if (!confirm('Delete conversation with ' + username + '?')) return;
+  await api('/api/messages/' + username, 'DELETE');
+  loadConvs();
+}
 function toggleSearch() {
   const bar = document.getElementById('nav-search-bar');
   bar.style.display = bar.style.display === 'flex' ? 'none' : 'flex';

@@ -152,6 +152,65 @@ def delete_post(pid):
     con.close()
     return jsonify({'message': 'Deleted'})
 
+# ── MESSAGES / CHAT ────────────────────────────────────────
+def ensure_messages_table():
+    con = sqlite3.connect(DB)
+    con.execute('''CREATE TABLE IF NOT EXISTS messages (
+        id       INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT NOT NULL,
+        sender   TEXT NOT NULL,
+        text     TEXT NOT NULL,
+        created  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )''')
+    con.commit()
+    con.close()
+
+ensure_messages_table()
+
+@app.route('/api/messages/<username>', methods=['GET'])
+def get_messages(username):
+    con = sqlite3.connect(DB)
+    con.row_factory = sqlite3.Row
+    rows = con.execute('SELECT * FROM messages WHERE username=? ORDER BY created ASC', (username,)).fetchall()
+    con.close()
+    return jsonify([dict(r) for r in rows])
+
+@app.route('/api/messages', methods=['POST'])
+def send_message():
+    d = request.json
+    username = d.get('username','').strip()
+    sender   = d.get('sender','').strip()
+    text     = d.get('text','').strip()
+    if not username or not sender or not text:
+        return jsonify({'error': 'Missing fields'}), 400
+    con = sqlite3.connect(DB)
+    cur = con.cursor()
+    cur.execute('INSERT INTO messages (username,sender,text) VALUES (?,?,?)', (username, sender, text))
+    con.commit()
+    new_id = cur.lastrowid
+    con.close()
+    return jsonify({'id': new_id})
+
+@app.route('/api/messages/conversations', methods=['GET'])
+def get_conversations():
+    con = sqlite3.connect(DB)
+    con.row_factory = sqlite3.Row
+    rows = con.execute('''
+        SELECT username, MAX(created) as last_msg, COUNT(*) as count,
+               SUM(CASE WHEN sender="user" THEN 1 ELSE 0 END) as unread
+        FROM messages GROUP BY username ORDER BY last_msg DESC
+    ''').fetchall()
+    con.close()
+    return jsonify([dict(r) for r in rows])
+
+@app.route('/api/messages/<username>', methods=['DELETE'])
+def delete_conversation(username):
+    con = sqlite3.connect(DB)
+    con.execute('DELETE FROM messages WHERE username=?', (username,))
+    con.commit()
+    con.close()
+    return jsonify({'message': 'Deleted'})
+    
 # ── RUN ───────────────────────────────────────────────────
 if __name__ == '__main__':
     print("\n╔══════════════════════════════════════╗")
